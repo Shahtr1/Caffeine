@@ -66,4 +66,4 @@ The program listens for Caps Lock state changes and detects it using a hidden, i
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
