@@ -2,68 +2,111 @@
 
 ## Overview
 
-The `Caffeine` program simulates an automated mouse movement tool that works when the Caps Lock key is ON. The program uses Java's `Robot` class to move the mouse to a random position on the screen at regular intervals. The Caps Lock key acts as a switch to enable or disable the mouse movement. 
+The `Caffeine` program simulates an automated mouse movement tool that works when the Caps Lock key is ON.  
+It uses Java's `Robot` class to move the mouse to random positions on the screen at fixed intervals.  
+Caps Lock acts as a switch: when it's ON, the mouse moves periodically; when it's OFF, the program does nothing.
 
-When Caps Lock is ON, the program will randomly move the mouse within the screen bounds. If Caps Lock is OFF, the program will simply wait for it to be turned ON.
+A small floating indicator window (the "flag") shows the Caps Lock state:
 
-The program listens for Caps Lock state changes and detects it using a hidden, invisible frame.
+- **Green + "CAPS ON"** → Caps Lock is active.
+- **Red + "caps off"** → Caps Lock is inactive.
+
+Double-clicking the indicator window will **exit the program**.
 
 ## Requirements
 
 - Java 8 or higher must be installed on your system.
-- A screen with at least a 1920x1080 resolution is recommended, as the program uses these values for random mouse movement within the screen bounds.
+- Works with any screen resolution (the program automatically detects screen size).
+- A compatible IDE, terminal, or script runner to compile and run the program.
 
 ## Features
 
-- **Random Mouse Movement**: When Caps Lock is ON, the mouse will be moved to a random position on the screen every 10 seconds.
-- **Caps Lock Detection**: The program uses an invisible frame that listens for Caps Lock key presses to detect when the Caps Lock state changes.
-- **Low Resource Usage**: The mouse movement check happens at a fixed interval (every 10 seconds), so it does not use excessive system resources.
+- **Visual Indicator**: A small floating window displays the Caps Lock state (green for ON, red for OFF).
+- **Random Mouse Movement**: Every 10 seconds, when Caps Lock is ON, the mouse pointer is moved to a random position within your screen bounds.
+- **Automatic Caps Lock Detection**: The state is polled directly from the system (no need for the frame to be in focus).
+- **Exit Shortcut**: Double-clicking the indicator window cleanly shuts down the program.
+- **Low Resource Usage**: Mouse movement is checked at a fixed 10-second interval.
+
+## Project Structure
+
+```scss
+CAFFEINE/
+├── run/
+│ ├── run_cfn.bat # Windows batch script to compile & run
+│ ├── run_cfn.vbs # Windows VBScript launcher (hides console window)
+│ ├── run_cfn.sh # Linux shell script to compile & run
+├── Caffeine.java # Main program source code
+├── Caffeine.class # Compiled bytecode
+├── LICENSE # License file
+└── README.md # Project documentation
+```
 
 ## How It Works
 
-1. **Caps Lock Detection**: 
-   - The program listens for key events on an invisible frame to detect when Caps Lock is toggled. This requires the frame to be **in focus** for the key listener to detect Caps Lock changes.
-   
+1. **Caps Lock Detection**:
+
+   - The program queries the system (`Toolkit.getLockingKeyState`) every 200ms to detect whether Caps Lock is ON or OFF.
+   - This ensures detection works even if the program window is not in focus.
+
 2. **Mouse Movement**:
-   - When Caps Lock is ON, the mouse will be moved to a random location on the screen within the screen's width (1920px) and height (1080px).
-   
-3. **Scheduled Task**:
-   - A scheduled task is run every 10 seconds that checks the Caps Lock state and moves the mouse if necessary.
 
-## Requirements
+   - When Caps Lock is ON, the mouse will be moved randomly across the entire screen every 10 seconds.
 
-- Java 8 or higher.
-- A compatible IDE or text editor to compile and run the program.
-- The frame window must be in focus for the Caps Lock state changes to be detected.
+3. **Indicator Window**:
+   - A small, always-on-top window shows Caps Lock state with color coding and text.
+   - Double-clicking the window exits the program immediately.
 
 ## Usage Instructions
 
-1. **Compile the Program**:
-   - Save the program as `Caffeine.java`.
-   - Open your terminal or command prompt and navigate to the directory where `Caffeine.java` is located.
-   - Compile the program using the following command:
-     ```bash
-     javac Caffeine.java
-     ```
+### Windows
 
-2. **Run the Program**:
-   - Once compiled, run the program using the following command:
-     ```bash
-     java Caffeine
-     ```
+1. Go into the `run/` folder.
+2. Double-click `run_cfn.bat` to compile and run in a command window.
+3. Or, double-click `run_cfn.vbs` to run silently without showing a console.
 
-3. **How to Enable/Disable Mouse Movement**:
-   - The program will only move the mouse when Caps Lock is ON.
-   - Press Caps Lock to toggle the state. The mouse will start moving randomly when Caps Lock is ON and stop when Caps Lock is OFF.
+### Linux / macOS
 
-4. **Important Note**:
-   - The invisible frame that listens for Caps Lock state changes must be in focus for the Caps Lock key events to be detected.
+1. Make the shell script executable:
+
+   ```bash
+   chmod +x run/run_cfn.sh
+   ```
+
+2. Run it:
+
+   ```bash
+   ./run/run_cfn.sh
+   ```
+
+3. To run without terminal, create a .desktop entry with:
+
+```ini
+[Desktop Entry]
+Type=Application
+Name=Caffeine
+Exec=/full/path/to/run/run_cfn.sh
+Terminal=false
+```
+
+### Manual (any OS)
+
+1. Compile:
+
+```bash
+javac Caffeine.java
+```
+
+2. Run:
+
+```bash
+java Caffiene
+```
 
 ## Limitations
 
-- The program requires the frame to be in focus in order to detect Caps Lock key events. If the frame loses focus, Caps Lock state changes won't be detected.
-- Currently, the program is designed to work with a screen resolution of at least 1920x1080.
+- `Toolkit.getLockingKeyState` may not be supported on some platforms (certain Linux distros or headless environments).
+- On Linux/macOS, hiding the terminal requires using a .desktop launcher or running in background with output redirected.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
